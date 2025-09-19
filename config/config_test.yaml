@@ -1,0 +1,54 @@
+Model:
+  name: "denseunet"
+  type: "residual_denseunet_v1_air"
+  cl_lr: 0.00001
+  lr: 0.0001
+  cl_epoch: 50
+  max_epoch: 150
+  batch_size:  32
+  denseblock_num: 3
+  activation: 'relu'
+  init_weight: True
+  seblock_pos: 'decoder'
+  Loss:
+    Reconstruction_Loss:
+      rate: 1.0
+      mse_rate: 0.1
+      lap_rate: 0.2
+      ssim_rate: 0.7
+    Recognition_Loss:
+      rate: 1.0
+    Contrast_Loss:
+      rate: 0.0
+
+Preprocess:
+  crop_mode: 'none'
+  padding_mode: 'mirror_pad'
+  padding_multiple: 1
+  normalize_mode: 'normal'
+  random_flip_mode: True
+  random_rotate_mode: True
+  match_histogram_mode: False
+
+Training:
+  dataset_path: "/home/ubuntul40/Howard/Dataset/88x88_cyc/cyc_all_level_v1"
+  root_path: "./model_record/result/${Model.name}"
+  lr_csv_path: "${Training.root_path}/${Daytime}_lr.csv"
+  save_weight_root: "${Training.root_path}/${Daytime}_epoch_ft"
+  loss_csv_path: "${Training.root_path}/${Daytime}_epoch_ft_loss.csv"
+  weight_path: ""
+  training: False
+  debug: False
+
+Testing:
+  root_path: ./model_record/testing/${Model.name}"
+  dataset_dir: "/home/ubuntu5080/airdunet/dataset/Testset/v3_all"
+  result_dir: "./inference_for_all_epoch/testset_88x88_v1/${Model.name}/"
+  test_result_csv_path: "${Testing.root_path}/${Model.name}_image.csv"
+  label_result_csv_path: "${Testing.root_path}/${Model.name}_label.csv"
+  valid_result_dir: "${Testing.root_path}/${Daytime}_valid"
+  weight_path: ""
+  draw_loss: True
+  testing: True
+  inference_all_epoch_mode: True
+  weight_prefix_name: "/home/ubuntu5080/airdunet/model_record/result/denseunet/25_0615_2116_epoch_ft_"

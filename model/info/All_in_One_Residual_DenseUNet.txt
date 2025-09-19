@@ -1,0 +1,2 @@
+text_code shape: torch.Size([2, 64, 88, 88])
+text_code shape: torch.Size([2, 64, 88, 88])
