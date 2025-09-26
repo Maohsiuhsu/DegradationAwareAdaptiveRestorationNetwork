@@ -1,90 +1,150 @@
-# AiRDUNet
+# Fingerprint dataset collection (FVC2000 / 2002 / 2004 / NIST SD302)
 
-by 111062574 Jui-Min Hsu
+Curated collection of human fingerprint datasets suitable for research and evaluation of fingerprint recognition algorithms.  
+只保留 FVC2000、FVC2002、FVC2004 與 NIST SD302 系列。
 
-## reference paper
-- DenseUNet: [Latent fingerprint enhancement based on DenseUNet](https://ieeexplore.ieee.org/document/8987279)
-    - 2019, international conference on biometrics (ICB). IEEE
-    - [reference github](https://github.com/tensorflow/examples/blob/master/tensorflow_examples/models/densenet/densenet.py)
-- Residual Dense Block: [DenseNet with Deep Residual Channel-Attention Blocks for Single Image Super Resolution](https://openaccess.thecvf.com/content_CVPRW_2019/papers/NTIRE/Jang_DenseNet_With_Deep_Residual_Channel-Attention_Blocks_for_Single_Image_Super_CVPRW_2019_paper.pdf)
-- AirNet: [All-In-One Image Restoration for Unknown Corruption](https://openaccess.thecvf.com/content/CVPR2022/papers/Li_All-in-One_Image_Restoration_for_Unknown_Corruption_CVPR_2022_paper.pdf)
-## architecture
-- Architecture
-![airdunet_architecture](./figsrc/AiRDUNet_architecture.png)
-- Overflow
-![airdunet_overflow](./figsrc/AiRDUNet_overall_Flow_chart.png)
-- Multi-task Learning
-![aridunet](./figsrc/MTL.png)
-## Environment Setup
-```shell
-conda create -n airdunet_torch python=3.10.8
-conda install -c anaconda pip
-pip install --upgrade pip
-# nvidia-smi->看CUDA Version去挑
-# https://pytorch.org/get-started/previous-versions/
-conda install pytorch==1.12.0 torchvision==0.13.0 torchaudio==0.12.0 cudatoolkit=11.3 -c pytorch
-pip install opencv-python
-conda install -c conda-forge tqdm
-pip install pyyaml
-pip install torchsummary
-pip install matplotlib
-pip install -U scikit-learn
-pip install pytorch-msssim
-pip install pandas
-pip install scikit-image
-pip install thop
-pip install torchviz
-```
-## Usage
-- build dataset csv (trainset & valset & testset)
-```py
-# in build_dataset_csv.py
-# set image size need to be saved in csv
-input_img_shape = (176, 36) # (176, 36) or (36, 36)
-# set your dataset folder path containing train and val subfolder
-input_root_path = fr"/local/SSD1/focal_tech/datasets/n9395_1023_v1_cyc_v2/"
-# set your inference/test set folder path containing identify and enroll subfolder
-testset_input_path = fr"./inference_for_all_epoch/testset_nasic9395_v10.4/"
-```
-```shell
-python preprocess/build_dataset_csv.py
-```
-- set config
-```yaml
-# set the following folder path to your path
-Training:
-  dataset_path: "/local/SSD1/focal_tech/datasets/n9395_1023_v1_cyc_v2/" # set your dataset folder path containing train and val subfolder
-  root_path: "./model_record/result/${Model.name}" # set your model checkpoint result path
-Testing:
-  root_path: "./model_record/testing/${Model.name}" # set your test path which saves the visualized imaged during training process and the loss image
-  dataset_dir: "/local/SSD1/focal_tech/datasets/testset_nasic9395_v10.4/" # set your inference/test set folder path containing identify and enroll subfolder
-  result_dir: "./inference_for_all_epoch/testset_nasic9395_v10.4/${Model.name}/" # set your result folder path which saves the restored images from dataset_dir folder
-```
-- train
-```yaml
-# in config
-Training:
-  training: True
-```
-```shell
-## use gpu ##
-CUDA_VISIBLE_DEVICES=<gpu_id> python train_cl.py -c config/config.yaml
-## use cpu only ##
-python train_cl.py -c config/config.yaml
-```
-- inference
-```yaml
-# in config
-Testing:
-  testing: True
-  inference_all_epoch_mode: True # if True, all the checkpoint will be saved
-```
-```shell
-## use gpu ##
-CUDA_VISIBLE_DEVICES=<gpu_id> python train_cl.py -c config/config.yaml
-## use cpu only ##
-python train_cl.py -c config/config.yaml
-```
-## note
-- Runnable virtual environment dependency setting can be seen in "./dense_torch_env.yaml"
-- My best epoch are saved in './weight/residual_denseunet_air_recog_n9395_1023_v1_cyc_v2_24_0807_0728_epoch_ft_118.pth'
+- [Dataset classification](#dataset-classification)  
+- [Public rectangular datasets](#public-rectangular-datasets)  
+  - [FVC2000 DB1 B](#fvc2000-db1-b)  
+  - [FVC2000 DB2 B](#fvc2000-db2-b)  
+  - [FVC2000 DB3 B](#fvc2000-db3-b)  
+  - [FVC2000 DB4 B](#fvc2000-db4-b)  
+  - [FVC2002 DB1 B](#fvc2002-db1-b)  
+  - [FVC2002 DB2 B](#fvc2002-db2-b)  
+  - [FVC2002 DB3 B](#fvc2002-db3-b)  
+  - [FVC2002 DB4 B](#fvc2002-db4-b)  
+  - [FVC2004 DB1 B](#fvc2004-db1-b)  
+  - [FVC2004 DB2 B](#fvc2004-db2-b)  
+  - [FVC2004 DB3 B](#fvc2004-db3-b)  
+  - [FVC2004 DB4 B](#fvc2004-db4-b)  
+- [Licensed rectangular datasets](#licensed-rectangular-datasets)  
+  - [FVC2000 DB1 A](#fvc2000-db1-a)  
+  - [FVC2000 DB2 A](#fvc2000-db2-a)  
+  - [FVC2000 DB3 A](#fvc2000-db3-a)  
+  - [FVC2000 DB4 A](#fvc2000-db4-a)  
+  - [FVC2002 DB1 A](#fvc2002-db1-a)  
+  - [FVC2002 DB2 A](#fvc2002-db2-a)  
+  - [FVC2002 DB3 A](#fvc2002-db3-a)  
+  - [FVC2002 DB4 A](#fvc2002-db4-a)  
+  - [FVC2004 DB1 A](#fvc2004-db1-a)  
+  - [FVC2004 DB2 A](#fvc2004-db2-a)  
+  - [FVC2004 DB3 A](#fvc2004-db3-a)  
+  - [FVC2004 DB4 A](#fvc2004-db4-a)  
+  - [NIST Special Database 302](#nist-special-database-302)  
+- [Licensed latent datasets](#licensed-latent-datasets)  
+  - [NIST Special Database 302 E](#nist-special-database-302-e)  
+
+---
+
+## Dataset classification
+
+**By access:**
+- **public**: Free download, no strict restrictions.  
+- **licensed**: Need signed license, often confidential.  
+- **secret**: Dataset cannot be downloaded, only algorithm submission is possible (e.g., competitions).  
+
+**By impression count:**
+- **rectangular dataset**: More than two impressions per finger.  
+- **latent dataset**: Latent prints (objects, crime scenes) matched with rolled/plain prints.  
+
+---
+
+## Public rectangular datasets
+
+### FVC2000 DB1 B
+- Size: 10 fingers × 8 impressions  
+- Format: TIFF, 500dpi, 300×300px  
+- [Download](http://bias.csr.unibo.it/fvc2000/Downloads/DB1_B.zip)  
+
+### FVC2000 DB2 B
+- Size: 10 × 8  
+- Format: TIFF, 500dpi, 256×364px  
+- [Download](http://bias.csr.unibo.it/fvc2000/Downloads/DB2_B.zip)  
+
+### FVC2000 DB3 B
+- Size: 10 × 8  
+- Format: TIFF, 500dpi, 448×478px  
+- [Download](http://bias.csr.unibo.it/fvc2000/Downloads/DB3_B.zip)  
+
+### FVC2000 DB4 B
+- Synthetic fingerprints (SFinGe generator unknown version)  
+- Size: 10 × 8  
+- Format: TIFF, 500dpi, 240×320px  
+- [Download](http://bias.csr.unibo.it/fvc2000/Downloads/DB4_B.zip)  
+
+---
+
+### FVC2002 DB1 B
+- Size: 10 × 8  
+- Format: TIFF, 500dpi, 388×374px  
+- [Download](http://bias.csr.unibo.it/fvc2002/Downloads/DB1_B.zip)  
+
+### FVC2002 DB2 B
+- Size: 10 × 8  
+- Format: TIFF, 569dpi, 296×560px  
+- [Download](http://bias.csr.unibo.it/fvc2002/Downloads/DB2_B.zip)  
+
+### FVC2002 DB3 B
+- Size: 10 × 8  
+- Format: TIFF, 500dpi, 300×300px  
+- [Download](http://bias.csr.unibo.it/fvc2002/Downloads/DB3_B.zip)  
+
+### FVC2002 DB4 B
+- Synthetic fingerprints (SFinGe v2.51)  
+- Size: 10 × 8  
+- Format: TIFF, 500dpi, 288×384px  
+- [Download](http://bias.csr.unibo.it/fvc2002/Downloads/DB4_B.zip)  
+
+---
+
+### FVC2004 DB1 B
+- Size: 10 × 8  
+- Format: TIFF, 500dpi, 640×480px  
+- [Download](http://bias.csr.unibo.it/fvc2004/Downloads/DB1_B.zip)  
+
+### FVC2004 DB2 B
+- Size: 10 × 8  
+- Format: TIFF, 512dpi, 328×364px  
+- [Download](http://bias.csr.unibo.it/fvc2004/Downloads/DB2_B.zip)  
+
+### FVC2004 DB3 B
+- Size: 10 × 8  
+- Format: TIFF, 512dpi, 300×480px  
+- [Download](http://bias.csr.unibo.it/fvc2004/Downloads/DB3_B.zip)  
+
+### FVC2004 DB4 B
+- Synthetic fingerprints (SFinGe v3.0)  
+- Size: 10 × 8  
+- Format: TIFF, 500dpi, 288×384px  
+- [Download](http://bias.csr.unibo.it/fvc2004/Downloads/DB4_B.zip)  
+
+---
+
+## Licensed rectangular datasets
+
+### FVC2000 DB1–DB4 A  
+- Size: 100 fingers × 8 impressions each  
+- Cost: ~140€ (includes all FVC2000–2004 datasets and book)  
+
+### FVC2002 DB1–DB4 A  
+- Same structure as DB*_B, larger set (100 fingers)  
+
+### FVC2004 DB1–DB4 A  
+- Same structure as DB*_B, larger set (100 fingers)  
+
+### NIST Special Database 302
+- 200 subjects × 10 fingers × 12–18 impressions  
+- Impression: plain, rolled, slap, palm  
+- Format: PNG, 500–1000dpi  
+- [Request page](https://nigos.nist.gov/datasets/sd302/request)  
+- [User guide (PDF)](https://nvlpubs.nist.gov/nistpubs/TechnicalNotes/NIST.TN.2007.pdf)  
+
+---
+
+## Licensed latent datasets
+
+### NIST Special Database 302 E
+- Latent fingerprints corresponding to SD302 subjects  
+- Size: 200 subjects × 50 impressions  
+- Format: PNG, 1000–1500dpi  
+- [Request page](https://nigos.nist.gov/datasets/sd302/request)  
